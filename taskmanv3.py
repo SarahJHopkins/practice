@@ -14,16 +14,16 @@
 def write_tasks_to_file():
     with open("tasks.txt", "w") as task_file:
         task_list_to_write = []
-        for t in task_list:
+        for task in task_list:
             # Convert each task dictionary to a semicolon-separated string for writing to the file
             str_attrs = [
-                t['task_number'],
-                t['username'],
-                t['title'],
-                t['description'],
-                t['due_date'].strftime(DATETIME_STRING_FORMAT),
-                t['assigned_date'].strftime(DATETIME_STRING_FORMAT),
-                "Yes" if t['completed'] else "No"
+                task['task_number'],
+                task['username'],
+                task['title'],
+                task['description'],
+                task['due_date'].strftime(DATETIME_STRING_FORMAT),
+                task['assigned_date'].strftime(DATETIME_STRING_FORMAT),
+                "Yes" if task['completed'] else "No"
             ]
             task_list_to_write.append(";".join(str_attrs))
         # Write the task list to the file, with each task on a separate line
@@ -54,7 +54,7 @@ def update_task(task_list):
                 return
             else:
                 # Search for the task in the list by task number, username and completion status
-                task = next((t for t in task_list if (t['task_number'] == task_num and t['username'] == curr_user and t['completed'] == False)), None)
+                task = next((task for task in task_list if (task['task_number'] == task_num and task['username'] == curr_user and task['completed'] == False)), None)
                 if task is None:
                     print("\nTask number not recognised, please enter a task number from the tasks displayed")
                     view_mine(False)
@@ -314,18 +314,18 @@ def view_tasks(menu, curr_user=None, status=None):
         print("\n\n{:<15} {:<25} {:<25} {:<12} {:<11} {:<5} {:<33}".format(
             "Task Number", "Task", "Assigned To", "Assigned", "Due", "Done", "Task Description"))
         print("=" * 132)    # header underline
-        for t in task_list:
-            if (curr_user is None or t['username'] == curr_user) and (status is None or t['completed'] == status):
+        for task in task_list:
+            if (curr_user is None or task['username'] == curr_user) and (status is None or task['completed'] == status):
                 # Split task description into multiple lines if it exceeds 33 characters
-                desc_lines = [t['description'][i:i+33] for i in range(0, len(t['description']), 33)]
+                desc_lines = [task['description'][lines:lines+33] for lines in range(0, len(task['description']), 33)]
                 # Join the lines into a single string with newlines
                 desc_str = "\n\t\t\t\t\t\t\t\t\t\t\t\t   ".join(desc_lines)
                 # Convert completed value to "yes" or "no"
-                completed_str = "yes" if t['completed'] else "no"
+                completed_str = "yes" if task['completed'] else "no"
                 disp_str = "{:<15} {:<25} {:<25} {:<12} {:<11} {:^5} {:<33}".format(
-                    t['task_number'], t['title'], t['username'], 
-                    t['assigned_date'].strftime(DATETIME_STRING_FORMAT),
-                    t['due_date'].strftime(DATETIME_STRING_FORMAT), 
+                    task['task_number'], task['title'], task['username'], 
+                    task['assigned_date'].strftime(DATETIME_STRING_FORMAT),
+                    task['due_date'].strftime(DATETIME_STRING_FORMAT), 
                     completed_str, desc_str)
                 print(disp_str)
 
@@ -462,23 +462,23 @@ if not os.path.exists("tasks.txt"):
 # Read task data from tasks.txt and create a list of task dictionaries
 with open("tasks.txt", 'r') as task_file:
     task_data = task_file.read().split("\n")
-    task_data = [t for t in task_data if t != ""]
+    task_data = [task for task in task_data if task != ""]
 
     task_list = []
-    for item, t_str in enumerate(task_data):
-        curr_t = {}
+    for item, task_str in enumerate(task_data):
+        curr_task = {}
 
         # Split task data by semicolon and add each component to the current task dictionary
-        task_components = t_str.split(";")
-        curr_t['task_number'] = task_components[0]
-        curr_t['username'] = task_components[1]
-        curr_t['title'] = task_components[2]
-        curr_t['description'] = task_components[3]
-        curr_t['due_date'] = datetime.strptime(task_components[4], DATETIME_STRING_FORMAT)
-        curr_t['assigned_date'] = datetime.strptime(task_components[5], DATETIME_STRING_FORMAT)
-        curr_t['completed'] = True if task_components[6] == "Yes" else False
+        task_components = task_str.split(";")
+        curr_task['task_number'] = task_components[0]
+        curr_task['username'] = task_components[1]
+        curr_task['title'] = task_components[2]
+        curr_task['description'] = task_components[3]
+        curr_task['due_date'] = datetime.strptime(task_components[4], DATETIME_STRING_FORMAT)
+        curr_task['assigned_date'] = datetime.strptime(task_components[5], DATETIME_STRING_FORMAT)
+        curr_task['completed'] = True if task_components[6] == "Yes" else False
 
-        task_list.append(curr_t)
+        task_list.append(curr_task)
 
 # Create user.txt file with default account if it doesn't exist
 if not os.path.exists("user.txt"):
@@ -493,12 +493,7 @@ with open("user.txt", 'r') as user_file:
     for user in user_data:
         username, password = user.split(';')
         username_password[username] = password
-    
-# count the number of tasks
-task_count = len(task_list)
-
-
-
+        
 #==================================================
 # Program start
 #==================================================
